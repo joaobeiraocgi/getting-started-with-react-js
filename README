@@ -1,0 +1,127 @@
+
+npx create-react-app my-app
+
+
+TaskList Component: This component will display a list of tasks. It will receive the tasks as a prop from its parent component.
+
+Task Component: This component will display a single task, including the task name and a checkbox to mark it as complete.
+
+AddTask Component: This component will allow the user to add new tasks to the list. It will include a form with an input field for the task name and a button to submit the form.
+
+App Component: This component will be the top-level component of our application. It will manage the state of our application, including the list of tasks and any filters applied to the list.
+
+App
+|- AddTask
+|- TaskList
+   |- Task
+   |- Task
+   |- ...
+
+
+import React from 'react';
+
+const Task = ({ task, onToggle }) => (
+  <li style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
+    <input
+      type="checkbox"
+      checked={task.completed}
+      onChange={() => onToggle(task.id)}
+    />
+    {task.name}
+  </li>
+);
+
+export default Task;
+
+This component receives a task prop, which is an object with a name and completed property. It also receives an onToggle function, which is called when the user clicks the checkbox.
+
+
+
+import React from 'react';
+import Task from './Task';
+
+const TaskList = ({ tasks, onToggle }) => (
+  <ul>
+    {tasks.map((task) => (
+      <Task key={task.id} task={task}onToggle={onToggle} />
+    ))}
+  </ul>
+);
+
+export default TaskList;
+
+
+This component receives an array of tasks and an onToggle function as props. It maps over the array of tasks and renders a Task component for each one.
+
+
+
+import React, { useState } from 'react';
+
+const AddTask = ({ onAdd }) => {
+  const [name, setName] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (name.trim()) {
+      onAdd(name);
+      setName('');
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <button type="submit">Add Task</button>
+    </form>
+  );
+};
+
+export default AddTask;
+
+This component uses the useState hook to manage the state of the input field. When the user submits the form, the onAdd function is called with the name of the new task.
+
+
+
+import React, { useState } from 'react';
+import TaskList from './TaskList';
+import AddTask from './AddTask';
+
+const App = () => {
+  const [tasks, setTasks] = useState([]);
+
+  const addTask = (name) => {
+    setTasks([...tasks, { id: Date.now(), name, completed: false }]);
+  };
+
+  const toggleTask = (id) => {
+    setTasks(
+      tasks.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
+    );
+  };
+
+  return (
+    <div>
+      <h1>Task List</h1>
+      <AddTask onAdd={addTask} />
+      <TaskList tasks={tasks} onToggle={toggleTask} />
+    </div>
+  );
+};
+
+export default App;
+
+
+This component uses the useState hook to manage the list of tasks. It defines two functions, addTask and toggleTask, which are passed down to the AddTask and TaskList components as props.
+
+
+That's it! With these four components, we have a basic task list application with the following functionality:
+
+Adding new tasks
+Marking tasks as complete
+Displaying a list of tasks with completed tasks crossed out
